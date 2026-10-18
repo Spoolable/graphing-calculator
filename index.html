@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphing Calculator</title>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" id="sidebar">
+        <header class="sidebar-header">
+          <h1>Graphing Calculator</h1>
+        </header>
+
+        <section class="expr-section">
+          <div class="expr-list" id="expr-list"></div>
+          <form class="add-form" id="add-form" data-mode="cartesian">
+            <div class="add-row">
+              <select id="mode-select" title="Graph type">
+                <option value="cartesian">y&nbsp;=&nbsp;f(x)</option>
+                <option value="polar">r&nbsp;=&nbsp;f(θ)</option>
+                <option value="parametric">(x(t),&nbsp;y(t))</option>
+              </select>
+              <input
+                id="expr-input"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="sin(x) + 2"
+              />
+              <button id="add-btn" type="submit" title="Add expression">+</button>
+            </div>
+            <div class="param-row" id="param-row" hidden>
+              <label
+                >x(t)
+                <input id="param-x" type="text" autocomplete="off" spellcheck="false" placeholder="cos(t)"
+              /></label>
+              <label
+                >y(t)
+                <input id="param-y" type="text" autocomplete="off" spellcheck="false" placeholder="sin(t)"
+              /></label>
+              <label class="t-range"
+                >t&nbsp;∈
+                <input id="t-min" type="number" step="any" value="0" />
+                …
+                <input id="t-max" type="number" step="any" value="6.283185307179586"
+              /></label>
+            </div>
+          </form>
+        </section>
+
+        <section class="history-section">
+          <h2>History</h2>
+          <ul class="history-list" id="history-list"></ul>
+        </section>
+
+        <footer class="help">
+          Scroll: zoom · Drag: pan · Double-click: reset view<br />
+          Hover: trace a curve · Click: pin the trace<br />
+          Keys: <kbd>+</kbd> <kbd>−</kbd> zoom · <kbd>0</kbd> reset · <kbd>G</kbd> grid · <kbd>←↑↓→</kbd> pan
+        </footer>
+      </aside>
+
+      <main class="graph" id="graph">
+        <canvas id="graph-canvas"></canvas>
+        <div class="toolbar">
+          <button id="zoom-in" title="Zoom in (+)">+</button>
+          <button id="zoom-out" title="Zoom out (−)">−</button>
+          <button id="zoom-reset" title="Reset view (0)">⌂</button>
+          <label class="grid-toggle"
+            ><input type="checkbox" id="grid-toggle" checked /> Grid</label
+          >
+        </div>
+        <div class="trace-overlay" id="trace-overlay" hidden></div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
