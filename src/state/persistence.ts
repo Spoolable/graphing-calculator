@@ -101,5 +101,11 @@ function sanitize(data: unknown): PersistedState | null {
     ? data['history'].filter((h): h is string => typeof h === 'string').slice(0, 60)
     : [];
 
-  return { expressions, history, viewport, gridVisible: asBool(data['gridVisible'], true) };
+  return {
+    expressions,
+    history,
+    viewport,
+    gridVisible: asBool(data['gridVisible'], true),
+    themeId: asStr(data['themeId']),
+  };
 }

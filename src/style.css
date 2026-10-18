@@ -2,11 +2,16 @@
   --bg: #0b0e13;
   --panel: #10151d;
   --panel-2: #141b25;
+  --input-bg: #0d1219;
+  --overlay-bg: rgba(16, 21, 29, 0.92);
   --border: #1e2836;
   --text: #dce5f0;
   --text-dim: #8b9bb0;
   --accent: #4f8ef7;
+  --on-accent: #08101f;
   --danger: #f76f6f;
+  --danger-bg: rgba(247, 111, 111, 0.08);
+  --danger-border: rgba(247, 111, 111, 0.35);
   --radius: 8px;
   color-scheme: dark;
 }
@@ -110,7 +115,7 @@ body {
 input[type="text"],
 input[type="number"],
 select {
-  background: #0d1219;
+  background: var(--input-bg);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -149,7 +154,7 @@ select:focus {
 .icon-btn:hover {
   color: var(--text);
   border-color: var(--border);
-  background: #0d1219;
+  background: var(--input-bg);
 }
 
 .icon-btn.active {
@@ -160,8 +165,8 @@ select:focus {
 .expr-error {
   margin: 8px 0 0;
   padding: 6px 8px;
-  background: rgba(247, 111, 111, 0.08);
-  border: 1px solid rgba(247, 111, 111, 0.35);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 6px;
   color: var(--danger);
   font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -247,7 +252,7 @@ select:focus {
 
 #add-btn {
   background: var(--accent);
-  color: #08101f;
+  color: var(--on-accent);
   border: none;
   border-radius: 6px;
   width: 34px;
@@ -385,7 +390,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(16, 21, 29, 0.92);
+  background: var(--overlay-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 6px;
@@ -423,6 +428,15 @@ kbd {
   accent-color: var(--accent);
 }
 
+.toolbar select {
+  width: auto;
+  flex: 0 0 auto;
+  max-width: 132px;
+  padding: 5px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
 /* trace overlay */
 
 .trace-overlay {
@@ -432,7 +446,7 @@ kbd {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  background: rgba(16, 21, 29, 0.92);
+  background: var(--overlay-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 8px 10px;

@@ -1,5 +1,6 @@
 import type { EvalFn } from '../math/compile';
 import type { ExprMode, TraceInfo } from '../state/types';
+import type { CanvasTheme } from '../theme/themes';
 import {
   type ColumnSample,
   type CurvePoint,
@@ -29,6 +30,7 @@ export interface Scene {
   viewport: Viewport;
   size: Size;
   gridVisible: boolean;
+  theme: CanvasTheme;
   exprs: PlottableExpr[];
   trace: TraceInfo | null;
 }
@@ -38,10 +40,6 @@ export interface RenderOutput {
   curveSamples: Map<string, CurvePoint[]>;
 }
 
-const BACKGROUND = '#0b0e13';
-const GRID_COLOR = '#18202b';
-const AXIS_COLOR = '#46586b';
-const LABEL_COLOR = '#8b9bb0';
 const FONT = '11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 const CURVE_WIDTH = 2;
 const TAU = Math.PI * 2;
@@ -49,7 +47,7 @@ const TAU = Math.PI * 2;
 export function render(ctx: CanvasRenderingContext2D, scene: Scene): RenderOutput {
   const { viewport: vp, size } = scene;
   ctx.clearRect(0, 0, size.width, size.height);
-  ctx.fillStyle = BACKGROUND;
+  ctx.fillStyle = scene.theme.background;
   ctx.fillRect(0, 0, size.width, size.height);
 
   drawGridAndAxes(ctx, scene);
@@ -108,7 +106,7 @@ export function render(ctx: CanvasRenderingContext2D, scene: Scene): RenderOutpu
     ctx.fillStyle = scene.trace.color;
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.strokeStyle = scene.theme.traceRing;
     ctx.stroke();
     ctx.restore();
   }
@@ -150,7 +148,7 @@ function drawGridAndAxes(ctx: CanvasRenderingContext2D, scene: Scene): void {
 
   if (gridVisible) {
     ctx.save();
-    ctx.strokeStyle = GRID_COLOR;
+    ctx.strokeStyle = scene.theme.grid;
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (const t of xTicks) {
@@ -169,7 +167,7 @@ function drawGridAndAxes(ctx: CanvasRenderingContext2D, scene: Scene): void {
 
   // Axes
   ctx.save();
-  ctx.strokeStyle = AXIS_COLOR;
+  ctx.strokeStyle = scene.theme.axis;
   ctx.lineWidth = 1;
   ctx.beginPath();
   const axisY = worldToScreenY(vp, size, 0);
@@ -189,7 +187,7 @@ function drawGridAndAxes(ctx: CanvasRenderingContext2D, scene: Scene): void {
 
   // Labels
   ctx.save();
-  ctx.fillStyle = LABEL_COLOR;
+  ctx.fillStyle = scene.theme.label;
   ctx.font = FONT;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';

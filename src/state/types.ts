@@ -34,6 +34,8 @@ export interface PersistedState {
   history: string[];
   viewport: Viewport;
   gridVisible: boolean;
+  /** Theme id; optional for states saved before themes existed. */
+  themeId?: string;
 }
 
 export interface TraceInfo {

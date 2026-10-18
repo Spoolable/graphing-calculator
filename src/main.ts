@@ -3,6 +3,7 @@ import { render, type RenderOutput } from './graph/renderer';
 import type { Size } from './graph/viewport';
 import { loadState, saveState } from './state/persistence';
 import { Store } from './state/store';
+import { applyTheme, getTheme, listThemes } from './theme/themes';
 import { initInteractions } from './ui/interactions';
 import { initSidebar } from './ui/sidebar';
 import { initTraceOverlay } from './ui/trace';
@@ -22,6 +23,7 @@ function main(): void {
 
   const store = new Store();
   store.hydrate(loadState());
+  applyTheme(getTheme(store.themeId));
 
   let size: Size = { width: 1, height: 1 };
   let dpr = 1;
@@ -34,6 +36,7 @@ function main(): void {
       viewport: store.viewport,
       size,
       gridVisible: store.gridVisible,
+      theme: getTheme(store.themeId).canvas,
       exprs: store.exprs,
       trace: store.trace,
     });
@@ -78,6 +81,7 @@ function main(): void {
   const zoomOutBtn = document.getElementById('zoom-out');
   const zoomResetBtn = document.getElementById('zoom-reset');
   const gridToggle = document.getElementById('grid-toggle') as HTMLInputElement | null;
+  const themeSelect = document.getElementById('theme-select') as HTMLSelectElement | null;
   const zoomBy = (factor: number): void => store.zoomAt(size.width / 2, size.height / 2, factor, size);
   zoomInBtn?.addEventListener('click', () => zoomBy(1.3));
   zoomOutBtn?.addEventListener('click', () => zoomBy(1 / 1.3));
@@ -87,6 +91,19 @@ function main(): void {
     gridToggle.addEventListener('change', () => store.setGridVisible(gridToggle.checked));
     store.subscribe(() => {
       if (gridToggle.checked !== store.gridVisible) gridToggle.checked = store.gridVisible;
+    });
+  }
+  if (themeSelect) {
+    for (const theme of listThemes()) {
+      const opt = document.createElement('option');
+      opt.value = theme.id;
+      opt.textContent = theme.name;
+      themeSelect.appendChild(opt);
+    }
+    themeSelect.value = store.themeId;
+    themeSelect.addEventListener('change', () => {
+      store.setTheme(themeSelect.value);
+      applyTheme(getTheme(store.themeId));
     });
   }
 

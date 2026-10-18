@@ -16,20 +16,10 @@ import {
   type Viewport,
   zoomAt,
 } from '../graph/viewport';
+import { DEFAULT_THEME_ID, getTheme, normalizeThemeId } from '../theme/themes';
 import { type PersistedState, type Slider, type TraceInfo } from './types';
 
 export const TAU = Math.PI * 2;
-
-const PALETTE = [
-  '#4f8ef7',
-  '#f771c1',
-  '#4fd18b',
-  '#f7b84f',
-  '#a06df7',
-  '#f76f4f',
-  '#4fd5d5',
-  '#8bd14f',
-];
 
 const DEFAULT_SLIDER: Omit<Slider, 'name'> = { min: -10, max: 10, step: 0.01, value: 1 };
 
@@ -67,6 +57,7 @@ export class Store {
   history: string[] = [];
   viewport: Viewport = { ...DEFAULT_VIEWPORT };
   gridVisible = true;
+  themeId = DEFAULT_THEME_ID;
   trace: TraceInfo | null = null;
   tracePinned = false;
 
@@ -82,7 +73,9 @@ export class Store {
   }
 
   hydrate(saved: PersistedState | null): void {
+    this.themeId = normalizeThemeId(saved?.themeId);
     if (saved && saved.expressions.length > 0) {
+      const palette = getTheme(this.themeId).palette;
       this.exprs = saved.expressions.map((e, i) => {
         const rec = this.makeRecord(
           e.mode,
@@ -91,7 +84,7 @@ export class Store {
           e.sourceY,
           e.tMin,
           e.tMax,
-          e.color || PALETTE[i % PALETTE.length],
+          e.color || palette[i % palette.length],
         );
         rec.id = e.id;
         rec.visible = e.visible;
@@ -141,6 +134,7 @@ export class Store {
   }
 
   addExpression(input: NewExprInput): string {
+    const palette = getTheme(this.themeId).palette;
     const rec = this.makeRecord(
       input.mode,
       input.source ?? '',
@@ -148,7 +142,7 @@ export class Store {
       input.sourceY ?? '',
       input.tMin ?? 0,
       input.tMax ?? TAU,
-      PALETTE[this.exprs.length % PALETTE.length],
+      palette[this.exprs.length % palette.length],
     );
     this.recompile(rec);
     this.exprs.push(rec);
@@ -259,6 +253,13 @@ export class Store {
     this.notify();
   }
 
+  setTheme(id: string): void {
+    const theme = getTheme(id);
+    if (theme.id === this.themeId) return;
+    this.themeId = theme.id;
+    this.notify();
+  }
+
   setTrace(info: TraceInfo | null, pinned: boolean): void {
     this.trace = info;
     this.tracePinned = pinned;
@@ -283,6 +284,7 @@ export class Store {
       history: [...this.history],
       viewport: { ...this.viewport },
       gridVisible: this.gridVisible,
+      themeId: this.themeId,
     };
   }
 

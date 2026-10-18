@@ -10,9 +10,10 @@ A fast, dependency-free graphing calculator built with **TypeScript**, the **Can
 - **Symbolic derivatives** — exact derivative curves via AST differentiation, drawn dashed, with slope (`y'`) shown in the trace readout
 - **Smooth navigation** — cursor-centered scroll zoom, drag panning, keyboard control, and one-key view reset
 - **Curve tracing** — hover to snap to any curve and read its coordinates; click to pin the reading
+- **Seven themes** — Midnight, OLED Black, Solarized Dark, Synthwave, Forest, Graphite, and Paper; the grid, axes, and curve palette all adapt to the active theme
 - **Clean rendering** — at least one sample per pixel column with discontinuity detection, so asymptotes (`tan x`, `1/x`) are never bridged; HiDPI-aware
 - **Adaptive axes** — 1–2–5 "nice" ticks with precision-aware labels that stay readable at any zoom
-- **Auto-save** — expressions, sliders, history, and viewport persist in `localStorage`
+- **Auto-save** — expressions, sliders, history, viewport, and theme persist in `localStorage`
 
 ## Getting started
 
@@ -58,6 +59,21 @@ re-range a slider.
 Press the **′** button on any Cartesian expression to plot its derivative as a dashed
 curve of the same color.
 
+### Themes
+
+Pick a theme from the dropdown in the graph toolbar — the whole UI, the grid, the axes,
+and the curve palette switch instantly, and your choice is remembered. Available themes:
+
+| Theme | Style |
+| --- | --- |
+| Midnight | The default deep-blue dark theme |
+| OLED Black | True-black background with neon curves — great for OLED screens |
+| Solarized Dark | The classic Ethan Schoonover palette |
+| Synthwave | Retrowave purple with hot-pink accents |
+| Forest | Deep green with bright, nature-toned curves |
+| Graphite | Clean neutral light theme |
+| Paper | Light graph-paper look with green grid lines |
+
 ### Navigating
 
 | Action | How |
@@ -74,6 +90,7 @@ curve of the same color.
 src/
   math/    lexer → parser → AST → validated JS closure; symbolic differentiation
   graph/   viewport transforms, 1–2–5 tick generation, adaptive sampling, renderer
+  theme/   theme definitions: CSS variables, canvas colors, and curve palettes
   state/   observable app store + localStorage persistence
   ui/      sidebar (expressions, sliders, history), trace overlay, input handling
 ```
@@ -85,7 +102,7 @@ vertical span per column so steep sections stay solid, and breaks polylines at n
 values and discontinuity jumps so asymptotes are not bridged.
 
 The suite covers parsing, compilation, symbolic derivatives, tick formatting,
-viewport math, and sampling behavior.
+viewport math, sampling behavior, and theme definitions.
 
 ## Tech
 
