@@ -49,6 +49,42 @@
           </form>
         </section>
 
+        <section class="vars-section">
+          <div class="section-head">
+            <h2>Variables</h2>
+            <button type="button" class="icon-btn" id="var-add-btn" title="Add a shared variable">
+              +
+            </button>
+          </div>
+          <form class="var-form" id="var-form" hidden>
+            <input
+              id="var-name"
+              type="text"
+              placeholder="a"
+              maxlength="8"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Variable name"
+            />
+            <input
+              id="var-value"
+              type="number"
+              step="any"
+              value="1"
+              aria-label="Starting value"
+              title="Starting value"
+            />
+            <button type="submit">Add</button>
+            <button type="button" class="icon-btn" id="var-cancel" title="Cancel">&times;</button>
+          </form>
+          <p class="var-error" id="var-error" hidden></p>
+          <div class="var-list" id="var-list"></div>
+          <p class="var-empty" id="var-empty">
+            Create a shared variable, or type a letter like <code>a</code> in an expression to get
+            a slider automatically.
+          </p>
+        </section>
+
         <section class="history-section">
           <h2>History</h2>
           <ul class="history-list" id="history-list"></ul>

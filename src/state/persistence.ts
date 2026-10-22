@@ -101,11 +101,33 @@ function sanitize(data: unknown): PersistedState | null {
     ? data['history'].filter((h): h is string => typeof h === 'string').slice(0, 60)
     : [];
 
+  const variables: Slider[] = [];
+  const varsRaw = data['variables'];
+  if (Array.isArray(varsRaw)) {
+    for (const v of varsRaw) {
+      if (!isRecord(v)) continue;
+      const name = asStr(v['name']).trim().toLowerCase();
+      if (!name || variables.some((existing) => existing.name === name)) continue;
+      const min = asNum(v['min'], -10);
+      const max = asNum(v['max'], 10);
+      if (!(max > min)) continue;
+      const value = Math.min(max, Math.max(min, asNum(v['value'], 1)));
+      variables.push({
+        name,
+        min,
+        max,
+        step: asNum(v['step'], (max - min) / 500),
+        value,
+      });
+    }
+  }
+
   return {
     expressions,
     history,
     viewport,
     gridVisible: asBool(data['gridVisible'], true),
     themeId: asStr(data['themeId']),
+    variables,
   };
 }

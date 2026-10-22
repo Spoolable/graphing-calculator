@@ -6,7 +6,7 @@ A fast, dependency-free graphing calculator built with **TypeScript**, the **Can
 
 - **Three graph types** — Cartesian `y = f(x)`, polar `r = f(θ)`, and parametric `(x(t), y(t))` with an editable t-range
 - **Rich math** — a hand-written lexer → parser → compiler pipeline: `+ - * / ^`, implicit multiplication (`2x`, `3sin(x)`), 28 built-in functions, constants (`pi`/`π`, `e`, `tau`/`τ`), and Unicode operators (`× ÷ −`)
-- **Automatic sliders** — every unknown letter becomes a slider (`a*x^2 + b*x + c` gives you `a`, `b`, `c`), with editable min/max ranges
+- **Sliders** — every unknown letter becomes a slider (`a*x^2 + b*x + c` gives you `a`, `b`, `c`), or create **shared variables** whose slider drives every expression at once; values are draggable *or* typeable, with editable min/max ranges
 - **Symbolic derivatives** — exact derivative curves via AST differentiation, drawn dashed, with slope (`y'`) shown in the trace readout
 - **Smooth navigation** — cursor-centered scroll zoom, drag panning, keyboard control, and one-key view reset
 - **Curve tracing** — hover to snap to any curve and read its coordinates; click to pin the reading
@@ -14,7 +14,7 @@ A fast, dependency-free graphing calculator built with **TypeScript**, the **Can
 - **Desktop app** — the same UI packages as a standalone Windows `.exe` (portable, no install) or a Linux AppImage via Electron
 - **Clean rendering** — at least one sample per pixel column with discontinuity detection, so asymptotes (`tan x`, `1/x`) are never bridged; HiDPI-aware
 - **Adaptive axes** — 1–2–5 "nice" ticks with precision-aware labels that stay readable at any zoom
-- **Auto-save** — expressions, sliders, history, viewport, and theme persist in `localStorage`
+- **Auto-save** — expressions, variables, sliders, history, viewport, and theme persist in `localStorage`
 
 ## Getting started
 
@@ -66,11 +66,17 @@ npm run dist:linux  # package a Linux AppImage → release/
 | Parameters | `x` (Cartesian), `θ` / `theta` / `t` (polar), `t` (parametric) |
 | Shorthand | `×` → `*`, `÷` → `/`, `−` → `-` |
 
-### Sliders
+### Variables & sliders
 
-Any name that isn't the graph's parameter turns into a slider — e.g. `a*sin(b*x + c)`
-produces sliders for `a`, `b`, and `c`. Drag to explore, or edit the min/max boxes to
-re-range a slider.
+Use the **Variables** panel to create a shared variable such as `a` with a starting value.
+Its slider then drives every expression that uses it — `a*sin(x)` and `a*x` move together.
+Drag the slider or type an exact number in its value box; the min/max boxes re-range it.
+Names already taken by functions, constants, or graph parameters (`x`, `t`, `θ`/`theta`)
+are reserved.
+
+Any unknown name that isn't a shared variable still gets its own automatic slider — e.g.
+`a*sin(b*x + c)` with no variables defined produces local sliders for `a`, `b`, and `c`.
+Defining `a` in the Variables panel promotes it to a shared slider everywhere.
 
 ### Derivatives
 
@@ -110,7 +116,7 @@ src/
   graph/   viewport transforms, 1–2–5 tick generation, adaptive sampling, renderer
   theme/   theme definitions: CSS variables, canvas colors, and curve palettes
   state/   observable app store + localStorage persistence
-  ui/      sidebar (expressions, sliders, history), trace overlay, input handling
+  ui/      sidebar (expressions, variables, sliders, history), trace overlay, input handling
 ```
 
 Expressions are parsed into an AST — user input is never `eval`'d raw. The AST is
@@ -120,7 +126,7 @@ vertical span per column so steep sections stay solid, and breaks polylines at n
 values and discontinuity jumps so asymptotes are not bridged.
 
 The suite covers parsing, compilation, symbolic derivatives, tick formatting,
-viewport math, sampling behavior, and theme definitions.
+viewport math, sampling behavior, shared-variable state, and theme definitions.
 
 ## Tech
 

@@ -4,6 +4,8 @@ import { differentiate } from '../math/derivatives';
 import { MathError } from '../math/errors';
 import {
   CARTESIAN_VARS,
+  CONSTANTS,
+  FUNCTIONS,
   PARAMETRIC_VARS,
   POLAR_VARS,
 } from '../math/functions';
@@ -22,6 +24,17 @@ import { type PersistedState, type Slider, type TraceInfo } from './types';
 export const TAU = Math.PI * 2;
 
 const DEFAULT_SLIDER: Omit<Slider, 'name'> = { min: -10, max: 10, step: 0.01, value: 1 };
+
+/** Identifiers that already have a meaning and may not become variables. */
+const RESERVED_VARIABLE_NAMES = new Set<string>([
+  ...Object.keys(FUNCTIONS),
+  ...Object.keys(CONSTANTS),
+  ...CARTESIAN_VARS,
+  ...POLAR_VARS,
+  ...PARAMETRIC_VARS,
+]);
+
+const VARIABLE_NAME_RE = /^[a-zA-Z_\u03C0\u03B8\u03C4][a-zA-Z0-9_\u03C0\u03B8\u03C4]*$/;
 
 export interface ExprRecord {
   id: string;
@@ -55,6 +68,8 @@ export interface NewExprInput {
 export class Store {
   exprs: ExprRecord[] = [];
   history: string[] = [];
+  /** Global variables shared by every expression that references them. */
+  variables: Slider[] = [];
   viewport: Viewport = { ...DEFAULT_VIEWPORT };
   gridVisible = true;
   themeId = DEFAULT_THEME_ID;
@@ -74,6 +89,13 @@ export class Store {
 
   hydrate(saved: PersistedState | null): void {
     this.themeId = normalizeThemeId(saved?.themeId);
+    this.variables = [];
+    for (const v of saved?.variables ?? []) {
+      if (!VARIABLE_NAME_RE.test(v.name) || RESERVED_VARIABLE_NAMES.has(v.name)) continue;
+      if (!(v.max > v.min)) continue;
+      if (this.variables.some((existing) => existing.name === v.name)) continue;
+      this.variables.push({ ...v });
+    }
     if (saved && saved.expressions.length > 0) {
       const palette = getTheme(this.themeId).palette;
       this.exprs = saved.expressions.map((e, i) => {
@@ -217,6 +239,61 @@ export class Store {
     this.notify();
   }
 
+  /**
+   * Adds a global variable. Returns an error message when the name cannot be
+   * used, or `null` on success.
+   */
+  addVariable(rawName: string, value = 1): string | null {
+    const name = rawName.trim().toLowerCase();
+    if (!VARIABLE_NAME_RE.test(name)) {
+      return 'Use a letter or short name like a, b, or k.';
+    }
+    if (RESERVED_VARIABLE_NAMES.has(name)) {
+      return `"${name}" is reserved — choose another name.`;
+    }
+    if (this.variables.some((v) => v.name === name)) {
+      return `Variable "${name}" already exists.`;
+    }
+    const initial = Number.isFinite(value)
+      ? Math.min(DEFAULT_SLIDER.max, Math.max(DEFAULT_SLIDER.min, value))
+      : 1;
+    this.variables.push({ name, ...DEFAULT_SLIDER, value: initial });
+    this.recompileAll();
+    this.notify();
+    return null;
+  }
+
+  removeVariable(name: string): void {
+    const index = this.variables.findIndex((v) => v.name === name);
+    if (index === -1) return;
+    this.variables.splice(index, 1);
+    this.recompileAll();
+    this.notify();
+  }
+
+  setVariableValue(name: string, value: number): void {
+    const variable = this.variables.find((v) => v.name === name);
+    if (!variable || !Number.isFinite(value)) return;
+    variable.value = Math.min(variable.max, Math.max(variable.min, value));
+    for (const rec of this.exprs) {
+      if (name in rec.sliderScope) rec.sliderScope[name] = variable.value;
+    }
+    this.notify();
+  }
+
+  setVariableRange(name: string, min: number, max: number): void {
+    const variable = this.variables.find((v) => v.name === name);
+    if (!variable || !Number.isFinite(min) || !Number.isFinite(max) || min >= max) return;
+    variable.min = min;
+    variable.max = max;
+    variable.step = (max - min) / 500;
+    variable.value = Math.min(max, Math.max(min, variable.value));
+    for (const rec of this.exprs) {
+      if (name in rec.sliderScope) rec.sliderScope[name] = variable.value;
+    }
+    this.notify();
+  }
+
   removeExpression(id: string): void {
     const index = this.exprs.findIndex((e) => e.id === id);
     if (index === -1) return;
@@ -285,6 +362,7 @@ export class Store {
       viewport: { ...this.viewport },
       gridVisible: this.gridVisible,
       themeId: this.themeId,
+      variables: this.variables.map((v) => ({ ...v })),
     };
   }
 
@@ -317,7 +395,8 @@ export class Store {
         const allowed = new Set([...vars, 't']);
         rec.fnX = compile(ax, allowed);
         rec.fnY = compile(ay, allowed);
-        rec.sliders = reconcileSliders(rec.sliders, vars);
+        rec.sliders = reconcileSliders(rec.sliders, vars.filter((v) => !this.isGlobal(v)));
+        rec.sliderScope = { ...scopeFrom(rec.sliders), ...this.globalScope(vars) };
       } else {
         const label = rec.mode === 'polar' ? 'r = f(\u03B8)' : 'y = f(x)';
         const ast = parseSource(rec.source, label);
@@ -326,12 +405,12 @@ export class Store {
         const extra = rec.mode === 'polar' ? ['\u03B8', 'theta', 't'] : ['x'];
         const allowed = new Set([...vars, ...extra]);
         rec.fn = compile(ast, allowed);
-        rec.sliders = reconcileSliders(rec.sliders, vars);
+        rec.sliders = reconcileSliders(rec.sliders, vars.filter((v) => !this.isGlobal(v)));
+        rec.sliderScope = { ...scopeFrom(rec.sliders), ...this.globalScope(vars) };
         if (rec.mode === 'cartesian' && rec.showDerivative) {
           rec.dfn = compile(differentiate(ast, 'x'), allowed);
         }
       }
-      rec.sliderScope = scopeFrom(rec.sliders);
     } catch (e) {
       if (e instanceof MathError) {
         rec.error = { message: e.message, pos: e.pos };
@@ -341,6 +420,19 @@ export class Store {
       rec.sliders = [];
       rec.sliderScope = {};
     }
+  }
+
+  private isGlobal(name: string): boolean {
+    return this.variables.some((v) => v.name === name);
+  }
+
+  private globalScope(vars: readonly string[]): Record<string, number> {
+    const scope: Record<string, number> = {};
+    for (const name of vars) {
+      const variable = this.variables.find((v) => v.name === name);
+      if (variable) scope[name] = variable.value;
+    }
+    return scope;
   }
 }
 
