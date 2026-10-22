@@ -1,18 +1,61 @@
 {
   "name": "graphing-calculator",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "description": "A fast, dependency-free graphing calculator with Cartesian, polar, and parametric graphs, automatic sliders, symbolic derivatives, curve tracing, and seven themes.",
+  "author": "Luis Moody",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "app": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:linux": "npm run build && electron-builder --linux",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"
+  },
+  "build": {
+    "appId": "com.spoolable.graphingcalculator",
+    "productName": "Graphing Calculator",
+    "artifactName": "Graphing-Calculator-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "build/icon.png",
+      "category": "Education",
+      "synopsis": "Dependency-free graphing calculator"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "build/icon.png",
+      "category": "public.app-category.education"
+    }
   }
 }

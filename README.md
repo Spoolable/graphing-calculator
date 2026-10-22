@@ -11,6 +11,7 @@ A fast, dependency-free graphing calculator built with **TypeScript**, the **Can
 - **Smooth navigation** — cursor-centered scroll zoom, drag panning, keyboard control, and one-key view reset
 - **Curve tracing** — hover to snap to any curve and read its coordinates; click to pin the reading
 - **Seven themes** — Midnight, OLED Black, Solarized Dark, Synthwave, Forest, Graphite, and Paper; the grid, axes, and curve palette all adapt to the active theme
+- **Desktop app** — the same UI packages as a standalone Windows `.exe` (portable, no install) or a Linux AppImage via Electron
 - **Clean rendering** — at least one sample per pixel column with discontinuity detection, so asymptotes (`tan x`, `1/x`) are never bridged; HiDPI-aware
 - **Adaptive axes** — 1–2–5 "nice" ticks with precision-aware labels that stay readable at any zoom
 - **Auto-save** — expressions, sliders, history, viewport, and theme persist in `localStorage`
@@ -29,6 +30,23 @@ npm test        # run the unit test suite (Vitest)
 npm run build   # type-check and build for production into dist/
 npm run preview # serve the production build
 ```
+
+## Desktop app
+
+The same app also runs as a native desktop application via Electron — no browser needed.
+
+```bash
+npm run app         # build and launch the desktop app locally
+npm run dist:win    # package a standalone Windows executable → release/
+npm run dist:linux  # package a Linux AppImage → release/
+```
+
+- **Windows** produces a single portable `.exe` — double-click to run, nothing to install.
+- **Linux** produces an `.AppImage` — mark it executable (`chmod +x`) and run it.
+- The binaries are unsigned, so Windows SmartScreen may warn on first launch — choose
+  **More info → Run anyway**.
+- Prebuilt binaries are attached to [GitHub releases](https://github.com/Spoolable/graphing-calculator/releases);
+  the workflow in `.github/workflows/build-desktop.yml` rebuilds them on every version tag.
 
 ## Usage
 
@@ -109,4 +127,5 @@ viewport math, sampling behavior, and theme definitions.
 - [Vite](https://vite.dev) — dev server and bundler
 - TypeScript (strict mode)
 - Canvas 2D — rendering, zero UI/graphing dependencies
+- [Electron](https://www.electronjs.org) + [electron-builder](https://www.electron.build) — desktop packaging (Windows `.exe`, Linux AppImage)
 - [Vitest](https://vitest.dev) — unit tests
