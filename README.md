@@ -1,131 +1,182 @@
-# Graphing Calculator
+<div align="center">
 
-A fast, dependency-free graphing calculator built with **TypeScript**, the **Canvas 2D API**, and **Vite**. Type an expression, get a graph — with automatic sliders, symbolic derivatives, and live coordinate tracing.
+<img src="docs/icon.png" width="112" height="112" alt="Graphing Calculator app icon" />
 
-## Features
+<h1>Graphing Calculator</h1>
 
-- **Three graph types** — Cartesian `y = f(x)`, polar `r = f(θ)`, and parametric `(x(t), y(t))` with an editable t-range
-- **Rich math** — a hand-written lexer → parser → compiler pipeline: `+ - * / ^`, implicit multiplication (`2x`, `3sin(x)`), 28 built-in functions, constants (`pi`/`π`, `e`, `tau`/`τ`), and Unicode operators (`× ÷ −`)
-- **Automatic sliders** — every unknown letter becomes a slider (`a*x^2 + b*x + c` gives you `a`, `b`, `c`), with editable min/max ranges
-- **Symbolic derivatives** — exact derivative curves via AST differentiation, drawn dashed, with slope (`y'`) shown in the trace readout
-- **Smooth navigation** — cursor-centered scroll zoom, drag panning, keyboard control, and one-key view reset
-- **Curve tracing** — hover to snap to any curve and read its coordinates; click to pin the reading
-- **Seven themes** — Midnight, OLED Black, Solarized Dark, Synthwave, Forest, Graphite, and Paper; the grid, axes, and curve palette all adapt to the active theme
-- **Desktop app** — the same UI packages as a standalone Windows `.exe` (portable, no install) or a Linux AppImage via Electron
-- **Clean rendering** — at least one sample per pixel column with discontinuity detection, so asymptotes (`tan x`, `1/x`) are never bridged; HiDPI-aware
-- **Adaptive axes** — 1–2–5 "nice" ticks with precision-aware labels that stay readable at any zoom
-- **Auto-save** — expressions, sliders, history, viewport, and theme persist in `localStorage`
+**Plot beautiful math — instantly.**
 
-## Getting started
+A fast, dependency-free graphing calculator for the web and desktop.
+
+<sub>Cartesian · Polar · Parametric · Automatic sliders · Symbolic derivatives · Live tracing · Seven themes</sub>
+
+<br />
+<br />
+
+[![Desktop build](https://github.com/Spoolable/graphing-calculator/actions/workflows/build-desktop.yml/badge.svg?branch=main)](https://github.com/Spoolable/graphing-calculator/actions/workflows/build-desktop.yml)
+![Tests](https://img.shields.io/badge/tests-63%20passing-3fb950?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?style=flat-square&logo=typescript&logoColor=white)
+![Runtime dependencies](https://img.shields.io/badge/runtime%20dependencies-0-8b5cf6?style=flat-square)
+![Platforms](https://img.shields.io/badge/platform-web%20%7C%20windows%20%7C%20linux-0ea5e9?style=flat-square)
+
+<br />
+
+[Quick start](#quick-start) ·
+[Downloads](#downloads) ·
+[Usage](#usage) ·
+[How it works](#how-it-works) ·
+[Releases](https://github.com/Spoolable/graphing-calculator/releases)
+
+<br />
+
+<img src="docs/screenshot-midnight.png" width="100%" alt="The calculator in the Midnight theme, plotting a sine wave with automatic sliders, a parabola, and a polar rose" />
+
+<sub><b>Midnight</b> — three graph types, automatic sliders, and a live trace readout on a single canvas.</sub>
+
+</div>
+
+## Highlights
+
+| | |
+| :--- | :--- |
+| **Three graph types**<br />Cartesian `y = f(x)`, polar `r = f(θ)`, and parametric `(x(t), y(t))` with an editable t-range. | **Automatic sliders**<br />Every unknown name becomes a slider — `a*sin(b*x + c)` gives you `a`, `b`, and `c` with editable min/max ranges. |
+| **Symbolic derivatives**<br />Exact derivative curves via AST differentiation, drawn dashed, with the slope `y'` shown in the trace readout. | **Live tracing**<br />Hover to snap to any curve and read its coordinates; click to pin the reading while you explore. |
+| **Seven themes**<br />Midnight, OLED Black, Solarized Dark, Synthwave, Forest, Graphite, and Paper — the grid, axes, and palette all adapt. | **Clean rendering**<br />At least one sample per pixel column with discontinuity detection, so asymptotes are never bridged. HiDPI-aware. |
+| **Zero runtime dependencies**<br />A hand-written lexer → parser → compiler pipeline, with user input validated and compiled — never `eval`'d raw. | **Browser and desktop**<br />The same UI runs in any modern browser or as a standalone Windows `.exe` / Linux AppImage. |
+
+## Screenshots
+
+| Synthwave | Paper |
+| :---: | :---: |
+| <img src="docs/screenshot-synthwave.png" alt="Synthwave theme" /> | <img src="docs/screenshot-paper.png" alt="Paper theme" /> |
+
+## Quick start
+
+### Run in the browser
 
 ```bash
-npm install     # first time only
-npm run dev     # start the dev server → http://localhost:5173
+git clone https://github.com/Spoolable/graphing-calculator.git
+cd graphing-calculator
+npm install
+npm run dev        # → http://localhost:5173
 ```
 
-Other scripts:
+### Run as a desktop app
 
 ```bash
-npm test        # run the unit test suite (Vitest)
-npm run build   # type-check and build for production into dist/
-npm run preview # serve the production build
+npm run app        # build the web assets and launch the Electron window
 ```
 
-## Desktop app
+## Downloads
 
-The same app also runs as a native desktop application via Electron — no browser needed.
+Prebuilt binaries live on the [**latest release**](https://github.com/Spoolable/graphing-calculator/releases/latest).
 
-```bash
-npm run app         # build and launch the desktop app locally
-npm run dist:win    # package a standalone Windows executable → release/
-npm run dist:linux  # package a Linux AppImage → release/
-```
+| Platform | Download | Notes |
+| :--- | :--- | :--- |
+| **Windows x64** | [Portable `.exe`](https://github.com/Spoolable/graphing-calculator/releases/latest/download/Graphing-Calculator-1.1.0-x64.exe) | Single file, nothing to install |
+| **Linux x64** | [`.AppImage`](https://github.com/Spoolable/graphing-calculator/releases/latest/download/Graphing-Calculator-1.1.0-x86_64.AppImage) | `chmod +x` and run |
 
-- **Windows** produces a single portable `.exe` — double-click to run, nothing to install.
-- **Linux** produces an `.AppImage` — mark it executable (`chmod +x`) and run it.
-- The binaries are unsigned, so Windows SmartScreen may warn on first launch — choose
-  **More info → Run anyway**.
-- Prebuilt binaries are attached to [GitHub releases](https://github.com/Spoolable/graphing-calculator/releases);
-  the workflow in `.github/workflows/build-desktop.yml` rebuilds them on every version tag.
+The binaries are unsigned, so Windows SmartScreen may warn on first launch — choose **More info → Run anyway**.
 
 ## Usage
 
 ### Adding expressions
 
-1. Choose a graph type in the dropdown (`y = f(x)`, `r = f(θ)`, or `(x(t), y(t))`).
-2. Type the expression — without `=` — and press **Enter** or **+**.
+1. Pick a graph type: `y = f(x)`, `r = f(θ)`, or `(x(t), y(t))`.
+2. Type the expression — **without** `=` — and press **Enter** or **+**.
 3. Each expression gets its own color, visibility checkbox, derivative toggle (Cartesian), and delete button.
 
 ### Syntax
 
 | Category | Supported |
-| --- | --- |
-| Operators | `+` `-` `*` `/` `^`, parentheses, implicit multiplication (`2x`, `x(x+1)`) |
-| Functions | `sin cos tan asin acos atan sinh cosh tanh asinh acosh atanh ln log log2 log10 sqrt cbrt exp abs floor ceil round sign min max hypot mod atan2` |
-| Constants | `pi` / `π`, `e`, `tau` / `τ` |
-| Parameters | `x` (Cartesian), `θ` / `theta` / `t` (polar), `t` (parametric) |
-| Shorthand | `×` → `*`, `÷` → `/`, `−` → `-` |
+| :--- | :--- |
+| **Operators** | `+` `-` `*` `/` `^`, parentheses, implicit multiplication (`2x`, `x(x+1)`) |
+| **Functions** | `sin cos tan asin acos atan sinh cosh tanh asinh acosh atanh ln log log2 log10 sqrt cbrt exp abs floor ceil round sign min max hypot mod atan2` |
+| **Constants** | `pi` / `π`, `e`, `tau` / `τ` |
+| **Parameters** | `x` (Cartesian), `θ` / `theta` / `t` (polar), `t` (parametric) |
+| **Shorthand** | `×` → `*`, `÷` → `/`, `−` → `-` |
 
 ### Sliders
 
-Any name that isn't the graph's parameter turns into a slider — e.g. `a*sin(b*x + c)`
-produces sliders for `a`, `b`, and `c`. Drag to explore, or edit the min/max boxes to
-re-range a slider.
+Any name that isn't the graph's parameter becomes a slider — for example
+`a*sin(b*x + c)` produces sliders for `a`, `b`, and `c`. Drag to explore, or edit
+the min/max boxes to re-range a slider.
 
 ### Derivatives
 
-Press the **′** button on any Cartesian expression to plot its derivative as a dashed
-curve of the same color.
+Press **′** on any Cartesian expression to plot its derivative as a dashed curve
+in the same color. The trace readout also shows the slope at the traced point.
 
 ### Themes
 
-Pick a theme from the dropdown in the graph toolbar — the whole UI, the grid, the axes,
-and the curve palette switch instantly, and your choice is remembered. Available themes:
+Pick a theme from the toolbar — the entire UI, grid, axes, and curve palette switch
+instantly, and your choice is remembered.
 
 | Theme | Style |
-| --- | --- |
+| :--- | :--- |
 | Midnight | The default deep-blue dark theme |
-| OLED Black | True-black background with neon curves — great for OLED screens |
+| OLED Black | True-black background with neon curves — great on OLED screens |
 | Solarized Dark | The classic Ethan Schoonover palette |
 | Synthwave | Retrowave purple with hot-pink accents |
 | Forest | Deep green with bright, nature-toned curves |
 | Graphite | Clean neutral light theme |
 | Paper | Light graph-paper look with green grid lines |
 
-### Navigating
+### Navigation
 
 | Action | How |
-| --- | --- |
-| Zoom | Scroll wheel (toward cursor), `+` / `−` keys, or toolbar buttons |
-| Pan | Drag the graph, or arrow keys (`Shift` for fine steps) |
-| Reset view | Double-click, `0` key, or the ⌂ button |
-| Trace | Hover near a curve to read its coordinates; click to pin, click again to release |
-| Grid | `G` key or the Grid checkbox |
+| :--- | :--- |
+| **Zoom** | Scroll wheel (toward cursor), `+` / `−` keys, or toolbar buttons |
+| **Pan** | Drag the graph, or arrow keys (`Shift` for fine steps) |
+| **Reset view** | Double-click, `0` key, or the ⌂ button |
+| **Trace** | Hover near a curve; click to pin, click again to release |
+| **Grid** | `G` key or the Grid checkbox |
 
 ## How it works
 
 ```
 src/
-  math/    lexer → parser → AST → validated JS closure; symbolic differentiation
-  graph/   viewport transforms, 1–2–5 tick generation, adaptive sampling, renderer
-  theme/   theme definitions: CSS variables, canvas colors, and curve palettes
-  state/   observable app store + localStorage persistence
-  ui/      sidebar (expressions, sliders, history), trace overlay, input handling
+├── math/     lexer → parser → AST → validated JS closure; symbolic differentiation
+├── graph/    viewport transforms, 1–2–5 tick generation, adaptive sampling, renderer
+├── theme/    theme definitions: CSS variables, canvas colors, and curve palettes
+├── state/    observable app store + localStorage persistence
+└── ui/       sidebar, trace overlay, pointer and keyboard interactions
+electron/     desktop shell (Chromium window, local file loading)
+build/        app icons (SVG, PNG, ICO)
+docs/         README screenshots and icon
 ```
 
 Expressions are parsed into an AST — user input is never `eval`'d raw. The AST is
-validated (function names, arity, unknown variables) and compiled into a tight JavaScript
-closure for fast evaluation. Rendering samples at least once per pixel column, drawing a
-vertical span per column so steep sections stay solid, and breaks polylines at non-finite
-values and discontinuity jumps so asymptotes are not bridged.
+validated (function names, arity, unknown variables) and compiled into a tight
+JavaScript closure for fast evaluation. Rendering samples at least once per pixel
+column, drawing a vertical span per column so steep sections stay solid, and breaks
+polylines at non-finite values and discontinuity jumps so asymptotes are not bridged.
+The viewport, expressions, sliders, and theme persist in `localStorage`.
 
-The suite covers parsing, compilation, symbolic derivatives, tick formatting,
-viewport math, sampling behavior, and theme definitions.
+## Testing
+
+```bash
+npm test           # 63 unit tests
+npm run test:watch # re-run on change
+```
+
+The suite covers parsing and compilation, symbolic derivatives, tick formatting,
+viewport math, sampling and discontinuity behavior, and theme definitions.
 
 ## Tech
 
-- [Vite](https://vite.dev) — dev server and bundler
-- TypeScript (strict mode)
-- Canvas 2D — rendering, zero UI/graphing dependencies
-- [Electron](https://www.electronjs.org) + [electron-builder](https://www.electron.build) — desktop packaging (Windows `.exe`, Linux AppImage)
-- [Vitest](https://vitest.dev) — unit tests
+- **TypeScript** (strict) and **Canvas 2D** — zero UI or graphing dependencies
+- **Vite 8** — dev server and bundler
+- **Electron 45** + **electron-builder** — Windows portable `.exe` and Linux AppImage
+- **Vitest 5** — unit tests
+
+## Contributing
+
+Issues and pull requests are welcome. If this project is useful to you, a ⭐ helps
+more people find it.
+
+---
+
+<div align="center">
+<sub>Built by <a href="https://github.com/Spoolable">Luis Moody</a> · <a href="https://github.com/Spoolable/graphing-calculator">GitHub</a> · <a href="https://github.com/Spoolable/graphing-calculator/releases">Releases</a></sub>
+</div>
