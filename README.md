@@ -8,6 +8,10 @@
 
 A fast, dependency-free graphing calculator for the web and desktop.
 
+<br />
+
+<a href="https://calc.nodecapture.co.uk"><strong>▶ Try it live at calc.nodecapture.co.uk</strong></a>
+
 <sub>Cartesian · Polar · Parametric · Automatic sliders · Symbolic derivatives · Live tracing · Seven themes</sub>
 
 <br />
