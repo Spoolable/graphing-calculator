@@ -7,6 +7,7 @@
 **Plot beautiful math — instantly.**
 
 A fast, dependency-free graphing calculator for the web and desktop.
+calc.nodecapture.co.uk
 
 <sub>Cartesian · Polar · Parametric · Automatic sliders · Symbolic derivatives · Live tracing · Seven themes</sub>
 
