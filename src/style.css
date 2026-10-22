@@ -199,32 +199,11 @@ select:focus {
   color: var(--text-dim);
 }
 
-.slider .slider-value {
+.slider output {
   grid-area: value;
-  width: 66px;
-  padding: 2px 4px;
   font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-align: right;
-}
-
-.slider--global {
-  grid-template-columns: auto 1fr auto auto;
-  grid-template-areas:
-    "name range value del"
-    "min range max del"
-    "note note note note";
-}
-
-.slider--global .slider-del {
-  grid-area: del;
-  align-self: center;
-}
-
-.slider--global .var-note {
-  grid-area: note;
-  color: var(--text-dim);
-  font-size: 11px;
-  padding-top: 2px;
+  min-width: 48px;
 }
 
 .slider input[type="range"] {
@@ -312,85 +291,6 @@ select:focus {
 
 .param-row.invalid input {
   border-color: var(--danger);
-}
-
-/* variables */
-
-.vars-section {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.vars-section h2 {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-dim);
-}
-
-.var-form {
-  display: flex;
-  align-items: stretch;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.var-form #var-name {
-  flex: 1;
-}
-
-.var-form #var-value {
-  width: 76px;
-  flex: 0 0 76px;
-}
-
-.var-form button[type="submit"] {
-  background: var(--accent);
-  color: var(--on-accent);
-  border: none;
-  border-radius: 6px;
-  padding: 0 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.var-form button[type="submit"]:hover {
-  filter: brightness(1.1);
-}
-
-.var-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.var-empty {
-  margin: 0;
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-.var-empty code {
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 4px;
-  font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-.var-error {
-  margin: 0 0 8px;
-  color: var(--danger);
-  font-size: 12px;
 }
 
 /* history */

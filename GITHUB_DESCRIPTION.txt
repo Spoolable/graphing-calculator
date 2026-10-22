@@ -1,8 +1,7 @@
 Graphing calculator built with TypeScript, Canvas, and Vite — Cartesian, polar, and
-parametric graphs, automatic and shared-variable sliders, symbolic derivatives, curve
-tracing, zoom/pan, seven color themes, and localStorage persistence. Zero runtime
-dependencies. Runs in the browser or as a standalone desktop app (portable Windows .exe /
-Linux AppImage).
+parametric graphs, automatic parameter sliders, symbolic derivatives, curve tracing,
+zoom/pan, seven color themes, and localStorage persistence. Zero runtime dependencies.
+Runs in the browser or as a standalone desktop app (portable Windows .exe / Linux AppImage).
 
 Short version:
-A fast, dependency-free graphing calculator — Cartesian, polar, and parametric graphs with automatic and shared-variable sliders, symbolic derivatives, live curve tracing, seven color themes, and standalone desktop builds.
+A fast, dependency-free graphing calculator — Cartesian, polar, and parametric graphs with automatic sliders, symbolic derivatives, live curve tracing, seven color themes, and standalone desktop builds.

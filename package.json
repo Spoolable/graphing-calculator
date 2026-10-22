@@ -1,8 +1,8 @@
 {
   "name": "graphing-calculator",
   "private": true,
-  "version": "1.2.0",
-  "description": "A fast, dependency-free graphing calculator with Cartesian, polar, and parametric graphs, automatic and shared-variable sliders, symbolic derivatives, curve tracing, and seven themes.",
+  "version": "1.1.0",
+  "description": "A fast, dependency-free graphing calculator with Cartesian, polar, and parametric graphs, automatic sliders, symbolic derivatives, curve tracing, and seven themes.",
   "author": "Luis Moody",
   "type": "module",
   "main": "electron/main.cjs",
@@ -41,25 +41,19 @@
       "target": [
         {
           "target": "portable",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
       ],
       "icon": "build/icon.ico"
     },
     "linux": {
-      "target": [
-        "AppImage"
-      ],
+      "target": ["AppImage"],
       "icon": "build/icon.png",
       "category": "Education",
       "synopsis": "Dependency-free graphing calculator"
     },
     "mac": {
-      "target": [
-        "dmg"
-      ],
+      "target": ["dmg"],
       "icon": "build/icon.png",
       "category": "public.app-category.education"
     }

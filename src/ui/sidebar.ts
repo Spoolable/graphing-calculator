@@ -15,17 +15,8 @@ export function initSidebar(store: Store): void {
   const tMinInput = mustEl<HTMLInputElement>('t-min');
   const tMaxInput = mustEl<HTMLInputElement>('t-max');
   const historyList = mustEl<HTMLUListElement>('history-list');
-  const varAddBtn = mustEl<HTMLButtonElement>('var-add-btn');
-  const varForm = mustEl<HTMLFormElement>('var-form');
-  const varNameInput = mustEl<HTMLInputElement>('var-name');
-  const varValueInput = mustEl<HTMLInputElement>('var-value');
-  const varCancelBtn = mustEl<HTMLButtonElement>('var-cancel');
-  const varError = mustEl<HTMLElement>('var-error');
-  const varList = mustEl<HTMLElement>('var-list');
-  const varEmpty = mustEl<HTMLElement>('var-empty');
 
   const rows = new Map<string, HTMLElement>();
-  const varRows = new Map<string, HTMLElement>();
 
   function syncRows(): void {
     const seen = new Set<string>();
@@ -157,11 +148,11 @@ export function initSidebar(store: Store): void {
       ) as HTMLElement | undefined;
       if (!sliderRow) continue;
       const range = sliderRow.querySelector<HTMLInputElement>('input[type="range"]');
-      const valueInput = sliderRow.querySelector<HTMLInputElement>('.slider-value');
+      const outEl = sliderRow.querySelector<HTMLElement>('output');
       const minInput = sliderRow.querySelector<HTMLInputElement>('.slider-min');
       const maxInput = sliderRow.querySelector<HTMLInputElement>('.slider-max');
       if (range && document.activeElement !== range) range.value = String(s.value);
-      if (valueInput && document.activeElement !== valueInput) valueInput.value = formatNum(s.value);
+      if (outEl) outEl.textContent = formatNum(s.value);
       if (minInput && document.activeElement !== minInput) minInput.value = String(s.min);
       if (maxInput && document.activeElement !== maxInput) maxInput.value = String(s.max);
     }
@@ -183,12 +174,8 @@ export function initSidebar(store: Store): void {
     range.step = String(s.step);
     range.value = String(s.value);
 
-    const valueInput = document.createElement('input');
-    valueInput.type = 'number';
-    valueInput.className = 'slider-value';
-    valueInput.step = 'any';
-    valueInput.value = formatNum(s.value);
-    valueInput.title = 'Exact value';
+    const outEl = document.createElement('output');
+    outEl.textContent = formatNum(s.value);
 
     const minInput = document.createElement('input');
     minInput.type = 'number';
@@ -206,17 +193,6 @@ export function initSidebar(store: Store): void {
 
     range.addEventListener('input', () => {
       store.setSliderValue(exprId, s.name, parseFloat(range.value));
-      valueInput.value = range.value;
-    });
-    valueInput.addEventListener('input', () => {
-      if (valueInput.validity.badInput) return;
-      const v = parseFloat(valueInput.value);
-      if (Number.isFinite(v)) store.setSliderValue(exprId, s.name, v);
-    });
-    valueInput.addEventListener('change', () => {
-      const v = parseFloat(valueInput.value);
-      if (Number.isFinite(v)) store.setSliderValue(exprId, s.name, v);
-      else valueInput.value = range.value;
     });
     minInput.addEventListener('change', () => {
       const v = parseFloat(minInput.value);
@@ -227,119 +203,8 @@ export function initSidebar(store: Store): void {
       if (Number.isFinite(v)) store.setSliderRange(exprId, s.name, parseFloat(minInput.value), v);
     });
 
-    el.append(label, range, valueInput, minInput, maxInput);
+    el.append(label, range, outEl, minInput, maxInput);
     return el;
-  }
-
-  function syncVariables(): void {
-    const seen = new Set<string>();
-    for (const variable of store.variables) {
-      seen.add(variable.name);
-      let row = varRows.get(variable.name);
-      if (!row) {
-        row = buildVariableRow(variable.name);
-        varRows.set(variable.name, row);
-        varList.appendChild(row);
-      }
-      updateVariableRow(row, variable);
-    }
-    for (const [name, row] of varRows) {
-      if (!seen.has(name)) {
-        row.remove();
-        varRows.delete(name);
-      }
-    }
-    varEmpty.hidden = store.variables.length > 0;
-  }
-
-  function buildVariableRow(name: string): HTMLElement {
-    const el = document.createElement('div');
-    el.className = 'slider slider--global';
-    el.dataset['name'] = name;
-    el.innerHTML = `
-      <span class="slider-name"></span>
-      <input type="range" />
-      <input type="number" class="slider-value" step="any" title="Exact value" />
-      <input type="number" class="slider-min" step="any" title="Slider minimum" />
-      <input type="number" class="slider-max" step="any" title="Slider maximum" />
-      <button type="button" class="icon-btn slider-del" title="Remove variable">&times;</button>
-      <span class="var-note" hidden></span>`;
-
-    const range = el.querySelector<HTMLInputElement>('input[type="range"]')!;
-    const valueInput = el.querySelector<HTMLInputElement>('.slider-value')!;
-    const minInput = el.querySelector<HTMLInputElement>('.slider-min')!;
-    const maxInput = el.querySelector<HTMLInputElement>('.slider-max')!;
-    const delBtn = el.querySelector<HTMLButtonElement>('.slider-del')!;
-
-    range.addEventListener('input', () => {
-      store.setVariableValue(name, parseFloat(range.value));
-      valueInput.value = range.value;
-    });
-    valueInput.addEventListener('input', () => {
-      if (valueInput.validity.badInput) return;
-      const v = parseFloat(valueInput.value);
-      if (Number.isFinite(v)) store.setVariableValue(name, v);
-    });
-    valueInput.addEventListener('change', () => {
-      const v = parseFloat(valueInput.value);
-      if (Number.isFinite(v)) store.setVariableValue(name, v);
-      else valueInput.value = range.value;
-    });
-    minInput.addEventListener('change', () => {
-      const v = parseFloat(minInput.value);
-      if (Number.isFinite(v)) store.setVariableRange(name, v, parseFloat(maxInput.value));
-    });
-    maxInput.addEventListener('change', () => {
-      const v = parseFloat(maxInput.value);
-      if (Number.isFinite(v)) store.setVariableRange(name, parseFloat(minInput.value), v);
-    });
-    delBtn.addEventListener('click', () => store.removeVariable(name));
-    return el;
-  }
-
-  function updateVariableRow(row: HTMLElement, variable: Slider): void {
-    const label = row.querySelector<HTMLElement>('.slider-name');
-    if (label) label.textContent = `${variable.name} =`;
-    const range = row.querySelector<HTMLInputElement>('input[type="range"]');
-    if (range) {
-      range.min = String(variable.min);
-      range.max = String(variable.max);
-      range.step = String(variable.step);
-      if (document.activeElement !== range) range.value = String(variable.value);
-    }
-    const valueInput = row.querySelector<HTMLInputElement>('.slider-value');
-    if (valueInput && document.activeElement !== valueInput) {
-      valueInput.value = formatNum(variable.value);
-    }
-    const minInput = row.querySelector<HTMLInputElement>('.slider-min');
-    if (minInput && document.activeElement !== minInput) minInput.value = String(variable.min);
-    const maxInput = row.querySelector<HTMLInputElement>('.slider-max');
-    if (maxInput && document.activeElement !== maxInput) maxInput.value = String(variable.max);
-
-    const note = row.querySelector<HTMLElement>('.var-note');
-    if (note) {
-      const used = store.exprs.some((rec) => variable.name in rec.sliderScope);
-      note.hidden = used;
-      if (!used) {
-        note.textContent = `Not used yet — type ${variable.name} in an expression above.`;
-      }
-    }
-  }
-
-  let varFormOpen = false;
-
-  function setVarFormOpen(open: boolean): void {
-    varFormOpen = open;
-    varForm.hidden = !open;
-    varError.hidden = true;
-    varError.textContent = '';
-    if (open) {
-      varNameInput.focus();
-      varNameInput.select();
-    } else {
-      varNameInput.value = '';
-      varValueInput.value = '1';
-    }
   }
 
   function syncHistory(): void {
@@ -393,25 +258,6 @@ export function initSidebar(store: Store): void {
 
   modeSelect.addEventListener('change', syncMode);
 
-  varAddBtn.addEventListener('click', () => setVarFormOpen(!varFormOpen));
-  varCancelBtn.addEventListener('click', () => setVarFormOpen(false));
-  varForm.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') setVarFormOpen(false);
-  });
-  varForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const value = parseFloat(varValueInput.value);
-    const message = store.addVariable(varNameInput.value, Number.isFinite(value) ? value : 1);
-    if (message) {
-      varError.hidden = false;
-      varError.textContent = message;
-      varNameInput.focus();
-      varNameInput.select();
-      return;
-    }
-    setVarFormOpen(false);
-  });
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const mode = modeSelect.value;
@@ -449,12 +295,10 @@ export function initSidebar(store: Store): void {
 
   store.subscribe(() => {
     syncRows();
-    syncVariables();
     syncHistory();
   });
   syncMode();
   syncRows();
-  syncVariables();
   syncHistory();
 }
 

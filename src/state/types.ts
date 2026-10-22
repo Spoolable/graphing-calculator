@@ -36,8 +36,6 @@ export interface PersistedState {
   gridVisible: boolean;
   /** Theme id; optional for states saved before themes existed. */
   themeId?: string;
-  /** Global (shared) variables; optional for states saved before they existed. */
-  variables?: Slider[];
 }
 
 export interface TraceInfo {
