@@ -70,9 +70,10 @@ npm run dist:linux  # package a Linux AppImage → release/
 
 Use the **Variables** panel to create a shared variable such as `a` with a starting value.
 Its slider then drives every expression that uses it — `a*sin(x)` and `a*x` move together.
-Drag the slider or type an exact number in its value box; the min/max boxes re-range it.
-Names already taken by functions, constants, or graph parameters (`x`, `t`, `θ`/`theta`)
-are reserved.
+Drag the slider or type an exact number in its value box; both update the graph live, and
+the min/max boxes re-range it. A variable only affects expressions that reference it — the
+panel shows a reminder while a variable isn't used yet. Names already taken by functions,
+constants, or graph parameters (`x`, `t`, `θ`/`theta`) are reserved.
 
 Any unknown name that isn't a shared variable still gets its own automatic slider — e.g.
 `a*sin(b*x + c)` with no variables defined produces local sliders for `a`, `b`, and `c`.

@@ -211,12 +211,20 @@ select:focus {
   grid-template-columns: auto 1fr auto auto;
   grid-template-areas:
     "name range value del"
-    "min range max del";
+    "min range max del"
+    "note note note note";
 }
 
 .slider--global .slider-del {
   grid-area: del;
   align-self: center;
+}
+
+.slider--global .var-note {
+  grid-area: note;
+  color: var(--text-dim);
+  font-size: 11px;
+  padding-top: 2px;
 }
 
 .slider input[type="range"] {

@@ -208,6 +208,11 @@ export function initSidebar(store: Store): void {
       store.setSliderValue(exprId, s.name, parseFloat(range.value));
       valueInput.value = range.value;
     });
+    valueInput.addEventListener('input', () => {
+      if (valueInput.validity.badInput) return;
+      const v = parseFloat(valueInput.value);
+      if (Number.isFinite(v)) store.setSliderValue(exprId, s.name, v);
+    });
     valueInput.addEventListener('change', () => {
       const v = parseFloat(valueInput.value);
       if (Number.isFinite(v)) store.setSliderValue(exprId, s.name, v);
@@ -257,7 +262,8 @@ export function initSidebar(store: Store): void {
       <input type="number" class="slider-value" step="any" title="Exact value" />
       <input type="number" class="slider-min" step="any" title="Slider minimum" />
       <input type="number" class="slider-max" step="any" title="Slider maximum" />
-      <button type="button" class="icon-btn slider-del" title="Remove variable">&times;</button>`;
+      <button type="button" class="icon-btn slider-del" title="Remove variable">&times;</button>
+      <span class="var-note" hidden></span>`;
 
     const range = el.querySelector<HTMLInputElement>('input[type="range"]')!;
     const valueInput = el.querySelector<HTMLInputElement>('.slider-value')!;
@@ -268,6 +274,11 @@ export function initSidebar(store: Store): void {
     range.addEventListener('input', () => {
       store.setVariableValue(name, parseFloat(range.value));
       valueInput.value = range.value;
+    });
+    valueInput.addEventListener('input', () => {
+      if (valueInput.validity.badInput) return;
+      const v = parseFloat(valueInput.value);
+      if (Number.isFinite(v)) store.setVariableValue(name, v);
     });
     valueInput.addEventListener('change', () => {
       const v = parseFloat(valueInput.value);
@@ -304,6 +315,15 @@ export function initSidebar(store: Store): void {
     if (minInput && document.activeElement !== minInput) minInput.value = String(variable.min);
     const maxInput = row.querySelector<HTMLInputElement>('.slider-max');
     if (maxInput && document.activeElement !== maxInput) maxInput.value = String(variable.max);
+
+    const note = row.querySelector<HTMLElement>('.var-note');
+    if (note) {
+      const used = store.exprs.some((rec) => variable.name in rec.sliderScope);
+      note.hidden = used;
+      if (!used) {
+        note.textContent = `Not used yet — type ${variable.name} in an expression above.`;
+      }
+    }
   }
 
   let varFormOpen = false;
